@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Bitcoin_analyzer
 {
-    public class GUI
+    public class GUI : Analyzer
     {
         Form newForm = new Form();
         DateTimePicker startDate = new DateTimePicker();
@@ -64,21 +64,21 @@ namespace Bitcoin_analyzer
 
         private void ShowResults(object source, EventArgs e)
         {
-            /*Analyzer newAnalysis = new Analyzer();
-            newAnalysis.Request(startDate.Value, endDate.Value);
+            Analyzer analysis = new Analyzer();
+            analysis.HandleRequest(startDate.Value, endDate.Value);
                        
-            resultsText.Text = "Longest downward trend: " + newAnalysis.numberOfDays + " days. \n";
-            resultsText.AppendText("Highest trading volume: " + newAnalysis.highestVolume[1] + "€. \n");
+            resultsText.Text = "Longest downward trend: " + analysis.numberOfDays + " days. \n";
+            resultsText.AppendText("Highest trading volume: " + analysis.highestVolumePrice + "€ in " + analysis.highestVolumeDate.ToShortDateString() + "\n");
 
-            if (newAnalysis.buyAndSellDays != null)
+            if (badTrend == false)
             {
-                resultsText.AppendText("Best day to buy: " + newAnalysis.buyAndSellDays[0].ToShortDateString() + "\n");
-                resultsText.AppendText("Best day to sell: " + newAnalysis.buyAndSellDays[1].ToShortDateString() + "\n");
+                resultsText.AppendText("Best day to buy: " + analysis.bestBuyDay.ToShortDateString() + "\n");
+                resultsText.AppendText("Best day to sell: " + analysis.bestSellDay.ToShortDateString() + "\n");
             }
             else
             {
                 resultsText.AppendText("No good days to buy or sell.");
-           }*/
+           }
         }
     }
 }
