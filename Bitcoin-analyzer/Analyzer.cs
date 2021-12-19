@@ -3,17 +3,17 @@ using System.Net;
 using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bitcoin_analyzer
 {
     public class Analyzer
     {
+        public Analyzer() {}
+
         public int numberOfDays { get; set; }
         public double highestVolumePrice { get; set; }
         public bool badTrend { get; set; }
+        public string errors { get; set; }
         public DateTime highestVolumeDate { get; set; }
         public DateTime bestBuyDay { get; set; }
         public DateTime bestSellDay { get; set; }
@@ -26,31 +26,53 @@ namespace Bitcoin_analyzer
             long start = new DateTimeOffset(startDate).ToUnixTimeSeconds();
             long end = new DateTimeOffset(endDate).ToUnixTimeSeconds() + hourInSeconds;
 
-            string url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=" + start + "&to=" + end;
-            Console.WriteLine(url);
-            WebRequest request = WebRequest.Create(url);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream dataStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(dataStream);
-            string json = reader.ReadToEnd();
-          
-            Analysis(json);
+            if(startDate > endDate)
+            {
+                errors = "Your end date must be later than your start date!";
+                return;
+            }
+            try
+            {
+                string url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=" + start + "&to=" + end;
+                WebRequest request = WebRequest.Create(url);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                string json = reader.ReadToEnd();
 
+                Analysis(json);
+            }
+            catch(WebException e)
+            {
+                errors = "There's something wrong with internet connection!";
+            }
+            catch(Exception e)
+            {
+                errors = "Oops, Something went wrong!";
+            }
+           
         }
 
-        public void Analysis(string json)
+        private void Analysis(string json)
         {
-            var content = JsonSerializer.Deserialize<Dictionary<string, List<List<double>>>>(json);
-            var prices = content["prices"];
-            var tradingVolumes = content["total_volumes"];
+            try
+            {
+                var content = JsonSerializer.Deserialize<Dictionary<string, List<List<double>>>>(json);
+                var prices = content["prices"];
+                var tradingVolumes = content["total_volumes"];
 
-            LongestDownwardTrend(prices);
-            HighestTradingVolume(tradingVolumes);
-            BestBuyAndSellDays(prices);
-            
+                LongestDownwardTrend(prices);
+                HighestTradingVolume(tradingVolumes);
+                BestBuyAndSellDays(prices);
+
+            }
+            catch (Exception e)
+            {
+                errors = "Oops, Something went wrong!";
+            }          
         }
 
-        public void LongestDownwardTrend(List<List<double>> prices)
+        private void LongestDownwardTrend(List<List<double>> prices)
         {
             
             int previousRecord = 0;
@@ -97,7 +119,7 @@ namespace Bitcoin_analyzer
                      
         }
 
-        public void HighestTradingVolume(List<List<double>> tradingVolumes)
+        private void HighestTradingVolume(List<List<double>> tradingVolumes)
         {
             List<double> highestVolume = tradingVolumes[0];
             for (int i = 0; i < tradingVolumes.Count; i++)
@@ -112,7 +134,7 @@ namespace Bitcoin_analyzer
             highestVolumePrice = highestVolume[1];
         }
 
-        public void BestBuyAndSellDays(List<List<double>> prices)
+        private void BestBuyAndSellDays(List<List<double>> prices)
         {
             double highestPrice = 0;
             double lowestPrice = 0;
