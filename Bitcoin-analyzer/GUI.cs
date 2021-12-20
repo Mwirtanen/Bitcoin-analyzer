@@ -4,23 +4,28 @@ using System.Windows.Forms;
 
 namespace Bitcoin_analyzer
 {
+    /// <summary>
+    /// This class handles the creation of the interface and interaction with it.
+    /// </summary>
+    
     public class GUI : Analyzer
     {
         public GUI() {}
 
-        private Form newForm = new Form();
-        private DateTimePicker startDate = new DateTimePicker();
-        private DateTimePicker endDate = new DateTimePicker();
-        private Label startDateLabel = new Label();
-        private Label endDateLabel = new Label();
-        private Button analyzeButton = new Button();
-        private TextBox resultsText = new TextBox();
-        private Font smallFont = new Font("Arial", 10);
-        private Font bigFont = new Font("Arial", 12);
+        private Form newForm = new Form();                              // Form that contains the GUI.
+        private DateTimePicker startDate = new DateTimePicker();        // Datetime picker for start date.
+        private DateTimePicker endDate = new DateTimePicker();          // Datetime picker for end date.
+        private Label startDateLabel = new Label();                     // Label for start date picker.
+        private Label endDateLabel = new Label();                       // Label for end date picker.
+        private Button analyzeButton = new Button();                    // Button to run the analysis.
+        private TextBox resultsText = new TextBox();                    // Textbox for the analysis results.
+        private Font smallFont = new Font("Arial", 10);                 // Font for start and end date labels.
+        private Font bigFont = new Font("Arial", 12);                   // Font for textbox.
 
+
+        // Creates and runs the interface for user.        
         public void DisplayGUI()
-        {
-            
+        {           
             newForm.Name = "Uncle Scrooge's bitcoin analyzer";
             newForm.Text = "Uncle Scrooge's bitcoin analyzer";
             newForm.Size = new Size(380, 400);
@@ -67,6 +72,7 @@ namespace Bitcoin_analyzer
             Application.Run(newForm);
         }
 
+        // Sends the data request and shows the results in the textbox.
         private void ShowResults(object source, EventArgs e)
         {
             Analyzer analysis = new Analyzer();
@@ -76,7 +82,7 @@ namespace Bitcoin_analyzer
             {
                 resultsText.Text = "Longest downward trend: " + analysis.numberOfDays + " days. \n";
                 resultsText.AppendText("\n");
-                resultsText.AppendText("Highest trading volume: " + analysis.highestVolumePrice + "€ in " + analysis.highestVolumeDate.ToShortDateString() + "\n");
+                resultsText.AppendText("Highest trading volume: " + analysis.highestVolumeAmount + "€ in " + analysis.highestVolumeDate.ToShortDateString() + "\n");
                 resultsText.AppendText("\n");
                 if (badTrend == false)
                 {
@@ -92,6 +98,7 @@ namespace Bitcoin_analyzer
             else
             {
                 MessageBox.Show(analysis.errors);
+                analysis.errors = null;
             }                                
         }
     }

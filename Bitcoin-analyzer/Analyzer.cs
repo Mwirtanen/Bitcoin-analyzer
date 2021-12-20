@@ -6,18 +6,24 @@ using System.Collections.Generic;
 
 namespace Bitcoin_analyzer
 {
+    /// <summary>
+    /// This class handles the request of data and analysis of it.
+    /// </summary>
+    
     public class Analyzer
     {
         public Analyzer() {}
 
-        public int numberOfDays { get; set; }
-        public double highestVolumePrice { get; set; }
-        public bool badTrend { get; set; }
-        public string errors { get; set; }
-        public DateTime highestVolumeDate { get; set; }
-        public DateTime bestBuyDay { get; set; }
-        public DateTime bestSellDay { get; set; }
+        public int numberOfDays { get; set; }              // The longest downward trend in given date range.
+        public double highestVolumeAmount { get; set; }    // The highest volume in euros.
+        public bool badTrend { get; set; }                 // True if all days within range are bad days to buy or sell bitcoin.
+        public string errors { get; set; }                 // Contains possible error messages.
+        public DateTime highestVolumeDate { get; set; }    // The Date of the highest volume.
+        public DateTime bestBuyDay { get; set; }           // Best day to buy bitcoins.
+        public DateTime bestSellDay { get; set; }          // Best day to sell bitcoins.
 
+
+        // Transforms datetimes to seconds for url parameters and sends a request to fetch data.
         public void HandleRequest(DateTime startDate, DateTime endDate)
         {
             startDate = new DateTime(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0, DateTimeKind.Utc);
@@ -53,6 +59,7 @@ namespace Bitcoin_analyzer
            
         }
 
+        // Formats the requested data and runs the analysis of it.
         private void Analysis(string json)
         {
             try
@@ -72,6 +79,7 @@ namespace Bitcoin_analyzer
             }          
         }
 
+        // Calculates the longest downward price trend in given date range.
         private void LongestDownwardTrend(List<List<double>> prices)
         {
             
@@ -119,6 +127,7 @@ namespace Bitcoin_analyzer
                      
         }
 
+        // Calculates the highest trading volume in euros along with date.
         private void HighestTradingVolume(List<List<double>> tradingVolumes)
         {
             List<double> highestVolume = tradingVolumes[0];
@@ -131,9 +140,10 @@ namespace Bitcoin_analyzer
 
             }
             highestVolumeDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(highestVolume[0]);
-            highestVolumePrice = highestVolume[1];
+            highestVolumeAmount = highestVolume[1];
         }
 
+        // Calculates the best days to buy and sell bitcoins in given date range.
         private void BestBuyAndSellDays(List<List<double>> prices)
         {
             double highestPrice = 0;
@@ -142,7 +152,7 @@ namespace Bitcoin_analyzer
             int downwardTrend = 0;
             DateTime previousDate = new DateTime(1970, 1, 1);        
             List<List<double>> dayPrices = new List<List<double>>();
-           
+      
             for (int i = 0; i < prices.Count; i++)
             {
                 double milliseconds = prices[i][0];
