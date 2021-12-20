@@ -6,4 +6,4 @@ This is a pre-assignement for Wincit Rising Star program. It's a bitcoin analyze
 - Highest volume in euros.
 - Best buy and sell days.
 
-Download the folder and open the app from Bitcoin-analyzer\Release\Bitcoin-analyzer.
+Download the folder and open the app from Release\Bitcoin-analyzer.
